@@ -133,6 +133,7 @@ function checkcolission(){
             alert(`Game Over! \r\nScore: ${score}`);
             console.log("first");
             running=false;
+            location=window.location;
             
         }
         else if((x1+110)>=(x-50) && (x1+110)<=(x+50)){
@@ -140,18 +141,21 @@ function checkcolission(){
           alert(`Game Over! \r\nScore: ${score}`);
           console.log("first");
           running=false;
+          location=window.location;
       }
         else if(x2>=(x-50) && x2<=(x+50)){
             document.getElementById('gameoversound').play();
             alert(`Game Over! \r\nScore: ${score}`);
             console.log("second");
             running=false;
+            location=window.location;
         }
         else if((x2+110)>=(x-50) && (x2+110)<=(x+50)){
           document.getElementById('gameoversound').play();
           alert(`Game Over! \r\nScore: ${score}`);
           console.log("second");
           running=false;
+          location=window.location;
       }
     }
     else if(frameCount>1 && y==350){
@@ -160,6 +164,7 @@ function checkcolission(){
             alert(`Game Over! \r\nScore: ${score}`);
             console.log("third1");
             running=false;
+            location=window.location;
         }
         else if((x3+110)>=(x-50) && (x3+110)<=(x+50)){
           document.getElementById('gameoversound').play();
@@ -167,18 +172,21 @@ function checkcolission(){
           console.log("third2");
           console.log(x);
           running=false;
+          location=window.location;
       }
         else if(x4>=(x-50) && x4<=(x+50)){
             document.getElementById('gameoversound').play();
             alert(`Game Over! \r\nScore: ${score}`);
             console.log("fourth");
             running=false;
+            location=window.location;
         }
         else if((x4+110)>=(x-50) && (x4+110)<=(x+50)){
           document.getElementById('gameoversound').play();
           alert(`Game Over! \r\nScore: ${score}`);
           console.log("fourth");
           running=false;
+          location=window.location;
       }
     }
 }
@@ -212,13 +220,11 @@ function onStart(){
 
 
 function gameLoop(){
+  if (running==false){
+    return; }
   ctx.clearRect(0,150,canvas.width,300);
   drawPerson();
   requestAnimationFrame(gameLoop);
-  if (running==false){
-      //return false;
-      location=location.href;
-  }
 }
 
 function keyDownHandler(e) {
