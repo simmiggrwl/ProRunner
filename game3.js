@@ -105,12 +105,12 @@ function drawPerson(){
     updatescore();
     drawbg();
   }
-  /**if(frameCount>5){
+  if(frameCount>5){
     dx=3;
   }
   if(frameCount>10){
     dx=4;
-  }**/
+  }
   x+=dx;
   if(spaceKey==true && y==350){
     document.getElementById('jumpsound').play();
