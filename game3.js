@@ -235,7 +235,7 @@ function onStart(){
 function gameLoop(){
   if (running==false){
     return; }
-  ctx.clearRect(0,150,canvas.width,300);
+  ctx.clearRect(0,150,canvas.width,canvas.height-300);
   drawPerson();
   requestAnimationFrame(gameLoop);
 }
