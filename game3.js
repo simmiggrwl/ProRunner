@@ -11,10 +11,12 @@ var ctxtext=text.getContext('2d');
 var bestname=localStorage.getItem("name");
 var running=true;
 var x=100;
-var y=350;
+var y=canvas.height-250;
 var dx=2;
 var dy=100;
 var spaceKey=false;
+var rightKey=false;
+var leftKey=false;
 var time=10;
 var frameCount=1;
 var x1=0;
@@ -44,9 +46,9 @@ img.src = 'https://i.pinimg.com/originals/57/9c/6c/579c6c1de4a0d0502d80613ff1255
 img.onload = function() {
   var pattern = ctx.createPattern(img, 'repeat');
   ctx.fillStyle = pattern;
-  ctx.fillRect(0,0,1400,150); //ceiling
-  ctx.moveTo(0,450);
-  ctx.fillRect(0,450,1400,150); //floor
+  ctx.fillRect(0,0,canvas.width,150); //ceiling
+  ctx.moveTo(0,150);
+  ctx.fillRect(0,canvas.height-150,canvas.width,150); //floor
 }
 //score
 ctxtext.fillStyle='white';
@@ -78,8 +80,8 @@ function drawbg(){
   ctx1.fillStyle='black';
   ctx1.fillRect(x1,0,width,height);
   ctx1.fillRect(x2,0,width,height);
-  ctx1.fillRect(x3,450,width,height);
-  ctx1.fillRect(x4,450,width,height);
+  ctx1.fillRect(x3,canvas.height-150,width,height);
+  ctx1.fillRect(x4,canvas.height-150,width,height);
 }
 
 //person
@@ -88,7 +90,7 @@ function drawPerson(){
   //ctx.fillRect(x,y,100,100);
   ctx.beginPath();
   ctx.moveTo(x,y);
-  if(y==350){
+  if(y==canvas.height-250){
   ctx.lineTo(x+50, y+100);
   ctx.lineTo(x-50, y+100);
   ctx.fill();}
@@ -97,7 +99,7 @@ function drawPerson(){
     ctx.lineTo(x-50, y-100);
     ctx.fill(); 
   }
-  if(x+100>canvas.width){
+  if(x+50>canvas.width){
     x=0;
     frameCount++;
     if(frameCount>2){
@@ -112,16 +114,27 @@ function drawPerson(){
     dx=4;
   }
   x+=dx;
-  if(spaceKey==true && y==350){
+  if(spaceKey==true && y==canvas.height-250){
     document.getElementById('jumpsound').play();
-    y-=dy;
+    y=250;
+    x+=100;
     spaceKey=false;
   }
   else if(spaceKey==true && y==250){
     document.getElementById('jumpsound').play();
-    y+=dy;
+    y=canvas.height-250;
+    x+=100;
     spaceKey=false;
   }
+  else if(rightKey==true){
+    x+=1;
+    rightKey=false;
+  }
+  else if(leftKey==true){
+    x-=1;
+    rightKey=false;
+  }
+
   checkcolission();
 }
 
@@ -158,7 +171,7 @@ function checkcolission(){
           location=window.location;
       }
     }
-    else if(frameCount>1 && y==350){
+    else if(frameCount>1 && y==canvas.height-250){
         if(x3>=(x-50) && x3<=(x+50) ){
             document.getElementById('gameoversound').play();
             alert(`Game Over! \r\nScore: ${score}`);
@@ -232,11 +245,23 @@ function keyDownHandler(e) {
     spaceKey = true;
     console.log("true");
   }
+  else if(e.keyCode ==39){
+    rightKey=true;
+  }
+  else if(e.keyCode==37){
+    leftKey=true;
+  }
 }
 
 function keyUpHandler(e) {
   if(e.keyCode == 32) {
     spaceKey = false;
+  }
+  else if(e.keyCode ==39){
+    rightKey=false;
+  }
+  else if(e.keyCode==37){
+    leftKey=false;
   }
 }
 document.addEventListener("keydown", keyDownHandler, false);
