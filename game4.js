@@ -93,10 +93,20 @@ function drawPerson(){
   ctx.lineTo(x+50, y+100);
   ctx.lineTo(x-50, y+100);
   ctx.fill();}
-  else{
+  else if(y==249){
+    ctx.lineTo(x+50, y-100);
+    ctx.lineTo(x-50, y-100);
+    ctx.fill();
+  }
+  else if(dy==-5){
     ctx.lineTo(x+50, y-100);
     ctx.lineTo(x-50, y-100);
     ctx.fill(); 
+  }
+  else if(dy==5){
+    ctx.lineTo(x+50, y+100);
+    ctx.lineTo(x-50, y+100);
+    ctx.fill();
   }
   if(x+50>canvas.width){
     x=0;
@@ -153,6 +163,7 @@ function changeyposition(){
   }
   else if(y<=250 && dy==-5){
     dy=0;
+    console.log(y);
   }
 }
 
