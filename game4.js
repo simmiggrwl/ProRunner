@@ -93,7 +93,7 @@ function drawPerson(){
   ctx.lineTo(x+50, y+100);
   ctx.lineTo(x-50, y+100);
   ctx.fill();}
-  else if(y==249){
+  else if(y<=250){
     ctx.lineTo(x+50, y-100);
     ctx.lineTo(x-50, y-100);
     ctx.fill();
