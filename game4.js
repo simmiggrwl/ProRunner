@@ -11,6 +11,8 @@ var ctxtext=text.getContext('2d'); //score
 var bestname=localStorage.getItem("name");
 var running=true;
 var x=100;
+var powerup=0;
+var x6=0;
 var y=canvas.height-250;
 var dx=2;
 var dy=0;
@@ -22,7 +24,11 @@ var x1=0;
 var x2=0;
 var x3=0;
 var x4=0;
+var x5=0;
 var score=0;
+var obsdy=0;
+var yobs=canvas.height-200;
+var yp=canvas.height-200+25;
 var highScore=localStorage.getItem("highscore");
 
 if(localStorage.getItem("highscore") == null) {
@@ -81,11 +87,46 @@ function drawbg(){
   ctx1.fillRect(x2,0,width,height);
   ctx1.fillRect(x3,canvas.height-150,width,height);
   ctx1.fillRect(x4,canvas.height-150,width,height);
+  while(x5<200 || Math.abs(x5-x1)<=100 || Math.abs(x5-x2)<=100 || Math.abs(x5-x3)<=100 || Math.abs(x5-x4)<=100){
+    x5=Math.floor(Math.random()*(canvas.width-100));
+    x6=Math.floor(Math.random()*(canvas.width-100));
+  }
 }
+
+//moving obstacle
+var pmove=1;
+function moveobstacle(){
+  ctx1.fillStyle='red';
+  ctx1.fillRect(x5,yobs,50,50);
+  if(yobs>=canvas.height-200){
+    obsdy=-2;
+  }
+  else if(yobs<=149){
+    obsdy=2;
+  }
+  yobs+=obsdy;
+   
+  
+  //invincible powerup
+  if(frameCount%3==0 && powerup==0){
+  ctx1.beginPath();  
+  ctx1.fillStyle='green';
+  ctx1.arc(x6,yp,25,0,Math.PI*2);
+  ctx1.fill();
+  x6+=pmove;
+  if(x6+25>=canvas.width)
+  {pmove=-1;}
+  else if(x6-25<=0){
+    pmove=1;
+  }
+  }
+}
+
+
 
 //person
 function drawPerson(){
-  ctx.fillStyle='green';
+  ctx.fillStyle='blue';
   //ctx.fillRect(x,y,100,100);
   ctx.beginPath();
   ctx.moveTo(x,y);
@@ -169,7 +210,7 @@ function changeyposition(){
 
 
 function checkcolission(){
-    if(frameCount>1 && y<=250){
+    if(powerup==0 && frameCount>1 && y<=250){
         if(x1>=(x-50) && x1<=(x+50)){
             document.getElementById('gameoversound').play();
             alert(`Game Over! \r\nScore: ${score}`);
@@ -200,7 +241,7 @@ function checkcolission(){
           location=window.location;
       }
     }
-    else if(frameCount>1 && y==canvas.height-250){
+    else if(powerup==0 && frameCount>1 && y==canvas.height-250){
         if(x3>=(x-50) && x3<=(x+50) ){
             document.getElementById('gameoversound').play();
             alert(`Game Over! \r\nScore: ${score}`);
@@ -231,6 +272,46 @@ function checkcolission(){
           location=window.location;
       }
     }
+    //collison with powerup
+    if(frameCount%3==0 && powerup==0){
+      if((y+100)>=(yp-25) && y<=yp+25){
+        if((x6+25)>=(x-50) && (x6-25)<=(x+50)){
+          console.log("yess");
+          powerup=1;
+          dx+=3;
+          alert("You are immune for 10 seconds!");
+          setTimeout(function() {powerup=0}, 10000);
+          setTimeout(function() {dx-=3}, 10000);
+        }
+      }
+    }
+    //moving red obstacle
+    if(powerup==0 && frameCount>1){
+      if(y==canvas.height-250 || dy==5){
+        if((x5+50)>=(x-50) && x5<=(x+50)){
+          if((yobs+50)>=y && yobs<=(y+100)){
+            document.getElementById('gameoversound').play();
+            alert(`Game Over! \r\nScore: ${score}`);
+            console.log("fourth");
+            running=false;
+            location=window.location;
+          }
+        }
+      }
+      else if(y<=250 || dy==-5){
+        if((x5+50)>=(x-50) && x5<=(x+50)){
+          if((yobs+50)>=(y-100) && yobs<=y){
+            document.getElementById('gameoversound').play();
+            alert(`Game Over! \r\nScore: ${score}`);
+            console.log("fourth");
+            running=false;
+            location=window.location;
+          }
+        }
+      }
+    }
+    
+    
 }
 
 function updatescore(){
@@ -265,7 +346,11 @@ function gameLoop(){
   if (running==false){
     return; }
   ctx.clearRect(0,148,canvas.width,canvas.height-298);
+  ctx1.clearRect(0,148,canvas1.width,canvas1.height-298);
   drawPerson();
+  if(frameCount>1){
+    moveobstacle();
+  }
   requestAnimationFrame(gameLoop);
 }
 
