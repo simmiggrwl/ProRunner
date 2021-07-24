@@ -25,10 +25,12 @@ var x2=0;
 var x3=0;
 var x4=0;
 var x5=0;
+var x7=0;
 var score=0;
 var obsdy=0;
 var yobs=canvas.height-200;
 var yp=canvas.height-200+25;
+var scorep=true;
 var highScore=localStorage.getItem("highscore");
 
 if(localStorage.getItem("highscore") == null) {
@@ -90,24 +92,37 @@ function drawbg(){
   while(x5<200 || Math.abs(x5-x1)<=100 || Math.abs(x5-x2)<=100 || Math.abs(x5-x3)<=100 || Math.abs(x5-x4)<=100){
     x5=Math.floor(Math.random()*(canvas.width-100));
     x6=Math.floor(Math.random()*(canvas.width-100));
+    x7=Math.floor(Math.random()*(canvas.width-100));
   }
 }
 
 //moving obstacle
 var pmove=1;
 function moveobstacle(){
-  ctx1.fillStyle='red';
-  ctx1.fillRect(x5,yobs,50,50);
-  if(yobs>=canvas.height-200){
-    obsdy=-2;
-  }
-  else if(yobs<=149){
-    obsdy=2;
-  }
-  yobs+=obsdy;
-   
-  
-  //invincible powerup
+  if(frameCount%2==0){
+      ctx1.fillStyle='red';
+      ctx1.fillRect(x5,yobs,50,50);
+      if(yobs>=canvas.height-200){
+      obsdy=-2;
+      }
+      else if(yobs<=149){
+      obsdy=2;
+      }
+      yobs+=obsdy;}
+    else{
+     ctx1.fillStyle='red';
+     ctx1.beginPath();  
+     ctx1.arc(x5,yobs+25,25,0,Math.PI*2);
+     ctx1.fill();
+     if((yobs+50)>=canvas.height-150){
+     obsdy=-2;
+     }
+     else if((yobs)<=149){
+     obsdy=2;
+     }
+     yobs+=obsdy;}   
+
+    //invincible powerup
   if(frameCount%3==0 && powerup==0){
   ctx1.beginPath();  
   ctx1.fillStyle='green';
@@ -115,10 +130,18 @@ function moveobstacle(){
   ctx1.fill();
   x6+=pmove;
   if(x6+25>=canvas.width)
-  {pmove=-1;}
+  {pmove=-2;}
   else if(x6-25<=0){
-    pmove=1;
+    pmove=2;
   }
+  }
+
+  //score powerup
+  if(frameCount%4==0 && scorep==true){
+    ctx1.beginPath();  
+    ctx1.fillStyle='#99EDC3';
+    ctx1.arc(x7,300,25,0,Math.PI*2);
+    ctx1.fill();
   }
 }
 
@@ -209,7 +232,7 @@ function changeyposition(){
 }
 
 
-function checkcolission(){
+function checkcolission(){  
     if(powerup==0 && frameCount>1 && y<=250){
         if(x1>=(x-50) && x1<=(x+50)){
             document.getElementById('gameoversound').play();
@@ -272,6 +295,43 @@ function checkcolission(){
           location=window.location;
       }
     }
+
+    //collision with scorepowerup
+    if(frameCount%4==0 && scorep==true){
+      if(y==canvas.height-250 || dy==5){
+        if((x7+25)>=(x-50) && (x7-25)<=(x+50)){
+          if(325>=y && 275<=(y+100)){
+            score+=30;
+            scorep=false;
+            setTimeout(function() {scorep=true}, 10000);
+          }
+        }
+      }
+      else if(y<=250 || dy==-5){
+        if((x7+25)>=(x-50) && (x7-25)<=(x+50)){
+          if(325>=(y-100) && 275<=y){
+            score+=30;
+            ctxtext.clearRect(0,0,text.width,text.height);
+            ctxtext.fillText(`Score: ${score}`,50,55);
+            if (score >= parseInt(highScore)) {
+              localStorage.setItem("highscore", score);  
+              localStorage.setItem("name", playername);    
+            }
+            else{
+              localStorage.getItem("highscore");
+              localStorage.getItem("name"); 
+            }
+            highScore=localStorage.getItem("highscore");
+            bestname=localStorage.getItem("name");
+            ctxtext.fillText(`HighScore: ${highScore}`, 50, 85);
+            ctxtext.fillText(`Best Player: ${bestname}`, 50, 115);
+            scorep=false;
+            setTimeout(function() {scorep=true}, 10000);
+            
+          }
+        }
+      }
+    }
     //collison with powerup
     if(frameCount%3==0 && powerup==0){
       if((y+100)>=(yp-25) && y<=yp+25){
@@ -285,8 +345,8 @@ function checkcolission(){
         }
       }
     }
-    //moving red obstacle
-    if(powerup==0 && frameCount>1){
+    // moving red obstacle
+    if(frameCount%2==0 && powerup==0 && frameCount>1){
       if(y==canvas.height-250 || dy==5){
         if((x5+50)>=(x-50) && x5<=(x+50)){
           if((yobs+50)>=y && yobs<=(y+100)){
@@ -310,8 +370,28 @@ function checkcolission(){
         }
       }
     }
-    
-    
+    else if(frameCount%2!=0 && powerup==0 && frameCount>1){
+        if(y==canvas.height-250 || dy==5){
+            if((x5+25)>=(x-50) && (x5-25)<=(x+50)){
+              if((yobs+50)>=y && (yobs)<=(y+100)){
+                document.getElementById('gameoversound').play();
+                alert(`Game Over! \r\nScore: ${score}`);
+                running=false;
+                location=window.location;
+              }
+            }
+          }
+          else if(y<=250 || dy==-5){
+            if((x5+25)>=(x-50) && (x5-25)<=(x+50)){
+              if((yobs+50)>=(y-100) && (yobs)<=y){
+                document.getElementById('gameoversound').play();
+                alert(`Game Over! \r\nScore: ${score}`);
+                running=false;
+                location=window.location;
+              }
+            }
+          }
+        }
 }
 
 function updatescore(){
